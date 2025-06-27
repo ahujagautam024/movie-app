@@ -3,6 +3,7 @@ import SearchBar from "@/components/searchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovies } from "@/services/api";
+import { updateSearchCount } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -20,7 +21,7 @@ const search = () => {
   } = useFetch(
     () =>
       fetchMovies({
-        query: searchTerm.trim() || "",
+        query: searchTerm,
       }),
     false
   );
@@ -29,6 +30,11 @@ const search = () => {
     const timeoutId = setTimeout(async () => {
       if (searchTerm.trim()) {
         await loadMovies();
+        console.log("Movies fetched:", movies);
+        if (movies?.length > 0 && movies?.[0]) {
+          console.log("Updating search count for:");
+          await updateSearchCount(searchTerm, movies[0]);
+        }
       } else {
         resetMovies();
       }
