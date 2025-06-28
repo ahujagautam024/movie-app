@@ -1,5 +1,5 @@
-//track
 import { Client, Databases, ID, Query } from "react-native-appwrite";
+
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!;
 
@@ -10,7 +10,6 @@ const client = new Client()
 const database = new Databases(client);
 
 export const updateSearchCount = async (query: string, movie: Movie) => {
-  console.log("Yaha aaya hoon");
   try {
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
       Query.equal("searchTerm", query),
@@ -23,24 +22,19 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
         COLLECTION_ID,
         existingMovie.$id,
         {
-          searchCount: existingMovie.count + 1,
+          count: existingMovie.count + 1,
         }
       );
     } else {
       await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
         searchTerm: query,
-        count: 1,
-        title: movie.title,
         movie_id: movie.id,
-        poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+        count: 1,
+        poster_url: "https://image.tmdb.org/t/p/w500" + movie.poster_path,
+        title: movie.title,
       });
     }
   } catch (error) {
     console.error("Error updating search count:", error);
   }
-  // Check if the query is valid
-
-  // If query exists, update the document
-
-  // If new query, create a new document
 };
